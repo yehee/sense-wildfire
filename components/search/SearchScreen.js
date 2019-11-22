@@ -66,7 +66,7 @@ export default class SearchScreen extends Component {
         />
         <Text style={{ ...styles.footer, marginTop: 25 }} onPress={() => navigate('Newsfeed')}>News & updates</Text>
         <Text style={styles.footer}>List of fire bans in BC</Text>
-        <Text style={styles.footer}>List of parks in BC</Text>
+        <Text style={styles.footer} onPress={() => navigate('Map')}>List of parks in BC</Text>
         <Text style={styles.footer}>Quick guides</Text>
         <Image
           source={require('../../assets/logo.png')}

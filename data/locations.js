@@ -5,7 +5,8 @@ export const locations = [
             longitude: -122.5390,
         },
         title: 'Lillooet Lake',
-        description: 'Extreme'
+        description: 'EXTREME',
+        source: require('../assets/lillooet.jpg'),
     },
     {
         coordinates: {
@@ -13,7 +14,8 @@ export const locations = [
             longitude: -121.25,
         },
         title: 'Greater Sierra',
-        description: 'Extreme'
+        description: 'EXTREME',
+        source: require('../assets/sierra.jpg'),
     },
     {
         coordinates: {
@@ -21,7 +23,8 @@ export const locations = [
             longitude: -122.4120,
         },
         title: 'Bear Lake',
-        description: 'Low'
+        description: 'MODERATE',
+        source: require('../assets/bear.jpg'),
     },
     {
         coordinates: {
@@ -29,7 +32,17 @@ export const locations = [
             longitude: -127.1424,
         },
         title: 'Fireside',
-        description: 'Moderate'
+        description: 'MODERATE',
+        source: require('../assets/fireside.jpg'),
+    },
+    {
+        coordinates: {
+            latitude: 49.275570,
+            longitude: -123.120522,
+        },
+        title: 'SAP Vancouver',
+        description: 'MODERATE',
+        source: require('../assets/sap.jpg'),
     }
 ];
 

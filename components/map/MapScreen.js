@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location';
@@ -8,7 +8,7 @@ import { locations } from '../../data/locations';
 const latitudeDelta = longitudeDelta = 20;
 export default class MapScreen extends Component {
   static navigationOptions = {
-    title: 'Map',
+    title: 'Find a Location'
   };
 
   constructor(props) {

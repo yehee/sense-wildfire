@@ -2,7 +2,15 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, ScrollView, ImageBackground } from 'react-native';
 import {
   ListItem,
+  Icon
 } from 'react-native-elements';
+import MapView, { Marker } from 'react-native-maps';
+import * as Permissions from 'expo-permissions';
+import * as Location from 'expo-location';
+import { locations } from '../../data/locations';
+import axios from 'axios';
+
+const latitudeDelta = longitudeDelta = 0.9;
 
 const COLOR_RED = '#DB4437';
 const COLOR_YELLOW = '#F4B400';
@@ -21,6 +29,12 @@ const styles = StyleSheet.create({
     color: '#3f5528',
     fontWeight: 'bold',
     marginBottom: 10,
+  },
+  statusItem: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   statusBar: {
     flexDirection: 'row',
@@ -53,40 +67,57 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  map: {
+    width: '100%',
+    height: 300,
+  },
 });
 
-const LOW = () => (
+const LOW = (status) => (
   <View
     style={{
+      ...styles.statusItem,
       backgroundColor: COLOR_GREEN,
-      flex: 1,
       borderTopLeftRadius: '5px',
       borderBottomLeftRadius: '5px',
     }}
-  />
+  >
+    {status === 'LOW' && <Icon name='star' />}
+  </View>
 );
 
-const HIGH = () => (
+const HIGH = (status) => (
   <View
     style={{
-      backgroundColor: COLOR_ORANGE,
-      flex: 1
+      ...styles.statusItem,
+      backgroundColor: COLOR_ORANGE
     }}
-  />
+  >
+    {status === 'HIGH' && <Icon name='star' />}
+  </View>
 );
 
-const EXTREME = () => (
+const EXTREME = (status) => (
   <View
     style={{
+      ...styles.statusItem,
       backgroundColor: COLOR_RED,
-      flex: 1,
       borderTopRightRadius: '5px',
       borderBottomRightRadius: '5px',
     }}
-  />
+  >
+    {status === 'EXTREME' && <Icon name='star' />}
+  </View>
 );
 
-const MODERATE = () => (<View style={{ backgroundColor: COLOR_YELLOW, flex: 1 }} />);
+const MODERATE = (status) => (
+  <View style={{
+    ...styles.statusItem,
+    backgroundColor: COLOR_YELLOW
+  }}>
+    {status === 'MODERATE' && <Icon name='star' />}
+  </View>
+);
 
 export default class DashboardScreen extends Component {
   static navigationOptions = {
@@ -99,10 +130,6 @@ export default class DashboardScreen extends Component {
     this.state = {
       status: 0,
       selectedIndex: 3,
-      list: [
-        { name: 'Lillooet Lake Lodge', subtitle: 'City, Province' },
-        { name: 'Narin falls', subtitle: 'City, Province' },
-      ],
       rules: [
         { name: 'Do not leave fire unattended' },
         { name: 'Avoid smoking' },
@@ -113,41 +140,97 @@ export default class DashboardScreen extends Component {
       contact: [
         { name: 'In case of fire, immediately dial 911' },
         { name: 'Local Part Ranger: (233) 788 - 9990' }
-      ]
+      ],
+      source: require('../../assets/lillooet.jpg'),
+      region: {
+        latitude: 37.78825,
+        longitude: -122.4324,
+        latitudeDelta,
+        longitudeDelta,
+      },
+      marker: {
+        coordinates: {
+          latitude: 50.2641,
+          longitude: -122.5390,
+        },
+        title: 'Lillooet Lake',
+        description: 'Extreme',
+      }
     };
+  }
+
+  async componentDidMount() {
+    const { navigation } = this.props;
+    const { region, marker } = this.state;
+    const title = navigation.getParam('location', 'Lillooet Lake');
+    console.log(title)
+    const { coordinates, description, source } = locations.find(location => location.title === title);
+    this.setState({
+      marker: {
+        ...marker,
+        coordinates,
+        title,
+        description
+      }
+    });
+    this.setState({
+      region: {
+        ...region,
+        ...coordinates
+      },
+      source
+    });
+    try {
+      const response = await axios.get('http://10.171.37.73:8000/fireRisk.html');
+      const { marker } = this.state;
+      this.setState({
+        marker: {
+          ...marker,
+          description: response.data
+        }
+      })
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  onRegionChange(region) {
+    this.setState({ region });
   }
 
   render() {
     const { navigation } = this.props;
-    const { rules, contact } = this.state;
+    const { rules, contact, region, marker, source } = this.state;
+    const { coordinates, title, description } = marker;
     const location = navigation.getParam('location', 'n/a');
+    console.log(description)
     return (
       <ScrollView>
-        <ImageBackground source={require('../../assets/forest.jpg')} style={styles.background} />
+        <ImageBackground source={source} style={styles.background} />
         <View style={{ padding: 20 }}>
           <Text style={styles.title}>{location}</Text>
           <Text style={styles.subtitle}>Today's fire danger</Text>
           <View
             style={styles.statusBar}>
             <View style={styles.container}>
-              {LOW()}
+              {LOW(description)}
               <Text style={styles.label}>LOW</Text>
             </View>
             <View style={styles.container}>
-              {MODERATE()}
+              {MODERATE(description)}
               <Text style={styles.label}>MODERATE</Text>
             </View>
             <View style={styles.container}>
-              {HIGH()}
+              {HIGH(description)}
               <Text style={styles.label}>HIGH</Text>
             </View>
             <View style={styles.container}>
-              {EXTREME()}
+              {EXTREME(description)}
               <Text style={styles.label}>EXTREME</Text>
             </View>
           </View>
           <Text style={styles.subtitle}>Is there a fire ban?</Text>
-          <Text style={styles.warning}>YES</Text>
+          <Text style={styles.warning}>{description === 'EXTREME' || description === 'HIGH' ? 'YES' : 'NO'}</Text>
           <Text style={{ ...styles.subtitle, marginTop: 10 }}>Preventing fires</Text>
           <View>
             {rules.map((l, i) => (
@@ -171,6 +254,20 @@ export default class DashboardScreen extends Component {
             ))}
           </View>
         </View>
+        <Text style={{ ...styles.subtitle, marginTop: 10 }}>Location</Text>
+        <MapView
+          style={styles.map}
+          region={region}
+          showsUserLocation={true}
+          onRegionChange={() => this.onRegionChange}
+        >
+          {<Marker
+            coordinate={coordinates}
+            title={title}
+            description={description}
+          // onPress={() => this._handleEvent(marker.id)}
+          />}
+        </MapView>
       </ScrollView>
     );
   }

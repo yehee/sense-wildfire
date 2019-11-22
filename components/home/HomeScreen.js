@@ -22,7 +22,7 @@ export default class HomeScreen extends Component {
         />
         <Button
           title="Dashboard"
-          onPress={() => navigate('Dashboard', { location: 'Default Location' })}
+          onPress={() => navigate('Dashboard', { location: 'Lillooet Lake' })}
         />
         <Button
           title="Newsfeed"
