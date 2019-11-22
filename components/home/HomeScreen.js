@@ -14,15 +14,19 @@ export default class HomeScreen extends Component {
       <View>
         <Button
           title="Map"
-          onPress={() => navigate('Map', { name: 'Jane' })}
+          onPress={() => navigate('Map')}
         />
         <Button
           title="Search"
-          onPress={() => navigate('Search', { name: 'Jane' })}
+          onPress={() => navigate('Search')}
         />
         <Button
           title="Dashboard"
-          onPress={() => navigate('Dashboard', { name: 'Searched Location' })}
+          onPress={() => navigate('Dashboard', { location: 'Default Location' })}
+        />
+        <Button
+          title="Newsfeed"
+          onPress={() => navigate('Newsfeed')}
         />
       </View>
     );

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Button, View, Image, ScrollView, Text, StyleSheet } from 'react-native';
-import { SearchBar, ListItem } from 'react-native-elements';
+import { Image, ScrollView, Text, StyleSheet } from 'react-native';
+import { SearchBar } from 'react-native-elements';
 
 const styles = StyleSheet.create({
   footer: {
@@ -14,13 +14,14 @@ const styles = StyleSheet.create({
 export default class SearchScreen extends Component {
   static navigationOptions = {
     title: 'Search',
+    header: null,
   };
 
   constructor(props) {
     super(props);
 
     this.state = {
-      search: '',
+      location: '',
       list: [
         {
           name: 'Lillooet Lake Lodge',
@@ -34,16 +35,19 @@ export default class SearchScreen extends Component {
     };
   }
 
-  updateSearch = value => {
-    this.setState({ search: value });
+  updateSearch = location => {
+    this.setState({ location });
   };
 
-  handleSubmit = value => {
-    console.log(value);
+  handleSubmit = () => {
+    const { location } = this.state;
+    const { navigate } = this.props.navigation;
+    navigate('Dashboard', { location });
   };
 
   render() {
-    const { search, list } = this.state;
+    const { location } = this.state;
+    const { navigate } = this.props.navigation;
     return (
       <ScrollView style={{ flex: 1, backgroundColor: '#3f5528' }}>
         <Image
@@ -51,27 +55,19 @@ export default class SearchScreen extends Component {
           style={{ width: '75%', height: 100, marginTop: 150, marginBottom: 50, alignSelf: 'center' }}
         />
         <SearchBar
+          clearIcon={{ name: 'keyboard-arrow-right' }}
           placeholder="Search by Location/Region"
           onChangeText={this.updateSearch}
-          value={search || ''}
-          containerStyle={{ backgroundColor: 'white', marginHorizontal: 20 }}
+          onClear={this.handleSubmit}
+          value={location || ''}
+          containerStyle={{ backgroundColor: 'white', marginHorizontal: 20, padding: 0, borderTopColor: 'transparent', borderBottomColor: 'transparent' }}
           inputStyle={{ fontSize: 14 }}
           inputContainerStyle={{ backgroundColor: 'white' }}
         />
-        <Text style={{ ...styles.footer, marginTop: 25 }}>News & updates</Text>
+        <Text style={{ ...styles.footer, marginTop: 25 }} onPress={() => navigate('Newsfeed')}>News & updates</Text>
         <Text style={styles.footer}>List of fire bans in BC</Text>
         <Text style={styles.footer}>List of parks in BC</Text>
         <Text style={styles.footer}>Quick guides</Text>
-        {/* <View style={{ flex: 1, backgroundColor: '#3f5528' }}>
-          {list.map((l, i) => (
-            <ListItem
-              key={i}
-              title={l.name}
-              subtitle={l.subtitle}
-              bottomDivider
-            />
-          ))}
-        </View> */}
         <Image
           source={require('../../assets/logo.png')}
           style={{ width: '20%', height: 25, marginTop: 50, alignSelf: 'center' }}

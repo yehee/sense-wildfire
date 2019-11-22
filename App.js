@@ -7,6 +7,7 @@ import MapScreen from './components/map/MapScreen';
 import SearchScreen from './components/search/SearchScreen';
 import DashboardScreen from './components/dashboard/DashboardScreen';
 import LocationScreen from './components/location/LocationScreen';
+import NewsfeedScreen from './components/newsfeed/NewsfeedScreen';
 
 const MainNavigator = createStackNavigator({
   Home: { screen: HomeScreen },
@@ -14,23 +15,7 @@ const MainNavigator = createStackNavigator({
   Search: { screen: SearchScreen },
   Dashboard: { screen: DashboardScreen },
   Location: { screen: LocationScreen },
-}, {
-  mode: 'modal',
-  headerMode: 'none',
-  transitionConfig: () => ({
-    containerStyle: {
-      backgroundColor: 'transparent',
-    },
-    containerStyleLight: {
-      backgroundColor: 'transparent',
-    },
-    containerStyleDark: {
-      backgroundColor: 'transparent',
-    },
-  }),
-  defaultNavigationOptions: {
-    gesturesEnabled: false,
-  },
+  Newsfeed: { screen: NewsfeedScreen },
 });
 
 // export default function App() {
